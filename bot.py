@@ -1,8 +1,14 @@
 import telebot
+import os
 from telebot import types
 from FromSheet import FromSheet
+import dotenv
 
-bot = telebot.TeleBot('7198822480:AAGcs_xzxNbcJ7vQJLIFPw2zEhnKMx3fhZA')
+dotenv.load_dotenv()
+
+API_TOKEN = os.getenv('TELEGRAM_BOT_API_KEY')
+
+bot = telebot.TeleBot(API_TOKEN)
 
 allowed = ["1015008397"]
 
