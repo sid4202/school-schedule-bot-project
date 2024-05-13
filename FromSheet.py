@@ -10,13 +10,14 @@ class FromSheet:
 
     def load_excel_table(self):
         if self.excel_table is None:
-            workbook = openpyxl.open('C:/Users/Cectus/z/school-schedule-bot-project/file.xlsx', read_only=True)
+            workbook = openpyxl.open('file.xlsx', read_only=True)
             sheet_names = workbook.sheetnames
             sheet2 = workbook[sheet_names[1]]
             sheet = workbook.active
             self.excel_table = sheet, sheet2
 
     def get_everything(self):
+        global lesson_y
         self.load_excel_table()
 
         sheet, sheet2 = self.excel_table
@@ -31,8 +32,8 @@ class FromSheet:
         else:
             lesson_y = 1 + self.lesson_number + self.day_of_week * 8
             lesson_name = sheet[lesson_y][self.lesson_x()].value
-        lesson_cell = sheet.cell(row=self.lesson_x(), column=lesson_y)
-        class_cell = sheet2.cell(row=lesson_y, column=self.teacher_y)
+        lesson_cell = sheet.cell(row=lesson_y, column=self.lesson_x()+1).coordinate
+        class_cell = sheet2.cell(row=self.teacher_y(), column=lesson_y+1).coordinate
         return [teacher_name, lesson_name, self.day_of_week, self.class_name, self.lesson_number, lesson_cell, class_cell]
 
     def lesson_x(self):

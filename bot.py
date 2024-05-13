@@ -1,18 +1,20 @@
 import telebot
 import os
 from telebot import types
+
+from ExcelEditor import ExcelEditor
 from FromSheet import FromSheet
 import dotenv
 
 dotenv.load_dotenv()
 
-API_TOKEN = os.getenv('TELEGRAM_BOT_API_KEY')
+# API_TOKEN = os.getenv('TELEGRAM_BOT_API_KEY')
 
-bot = telebot.TeleBot(API_TOKEN)
+bot = telebot.TeleBot('7198822480:AAGcs_xzxNbcJ7vQJLIFPw2zEhnKMx3fhZA')
 
-allowed = ["1015008397"]
+allowed = ["1015008397", "1585747030"]
 
-filePath = "C:/Users/Cectus/z/school-schedule-bot-project/"
+filePath = ""
 fileName = "file"
 fileExt = ".xlsx"
 
@@ -22,34 +24,47 @@ greetingsButtons = ["Изменить расписание", "Получить �
 actionSelectorStr = ["Введите данные в формате ДеньНедели КлассБуква НомерУрока. Пример '3 10Т 3'", "Скиньте файл"]
 getTableStr = "Файл успешно загружен!"
 
+
 @bot.message_handler(commands=["start"])
 def greetings(message):
+    # print(message.chat.id)
     if (str(message.from_user.id) in allowed):
         bot.send_message(message.chat.id, greetingsStr[0], reply_markup=keyboard(greetingsButtons))
         bot.register_next_step_handler(message, actionSelector)
     else:
         bot.send_message(message.chat.id, greetingsStr[1])
 
+
 def actionSelector(message):
-    if (message.text == greetingsButtons[0]):  #Изменить распсание
+    if (message.text == greetingsButtons[0]):  # Изменить распсание
         bot.send_message(message.chat.id, actionSelectorStr[0], reply_markup=types.ReplyKeyboardRemove())
         bot.register_next_step_handler(message, scheduleShow)
-    elif (message.text == greetingsButtons[1]):  #Получить таблицу
+    elif (message.text == greetingsButtons[1]):  # Получить таблицу
         file = open(filePath + fileName + fileExt, 'rb')
         bot.send_document(message.chat.id, file, reply_markup=keyboard(greetingsButtons))
+        file.close()
         bot.register_next_step_handler(message, actionSelector)
-    elif (message.text == greetingsButtons[2]):  #Внести актуальную таблицу
+    elif (message.text == greetingsButtons[2]):  # Внести актуальную таблицу
         bot.send_message(message.chat.id, actionSelectorStr[1], reply_markup=types.ReplyKeyboardRemove())
         bot.register_next_step_handler(message, getTable)
+
 
 def scheduleShow(message):
     dayClassLesson = message.text.split(" ")
     lesson = FromSheet(int(dayClassLesson[0]), dayClassLesson[1].lower(), int(dayClassLesson[2]))
-    bot.send_message(message.chat.id, "1.Урок: "+lesson.get_everything()[1]+"\n2.Учитель: "+lesson.get_everything()[0]+"\n\nВведите цифру и текст для изменения поля.")
-    print(lesson[5])
-    #bot.register_next_step_handler(message, getTable, lesson)
+    bot.send_message(message.chat.id,
+                     "1.Урок: " + lesson.get_everything()[1] + "\n2.Учитель: " + lesson.get_everything()[
+                         0] + "\n\nВведите цифру и текст для изменения поля.")
+    # print(lesson.get_everything()[5], lesson.get_everything()[6])
+    bot.register_next_step_handler(message, scheduleEdit, lesson.get_everything()[5], lesson.get_everything()[6])
 
-def scheduleEdit(message, lesson):
+
+def scheduleEdit(message, lesson, clas):
+    editor = ExcelEditor(filePath + fileName + fileExt)
+    if message.text.split(' ')[0] == 1:
+        editor.edit_cell(message.text.split(' ')[1], lesson, 0)
+    elif message.text.split(' ')[0] == 2:
+        editor.edit_cell(message.text.split(' ')[1], clas, 1)
     return
 
 
