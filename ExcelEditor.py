@@ -8,16 +8,13 @@ class ExcelEditor:
         self.origin_file_name = filename
         self.workbook = None
 
-    def load_excel_table(self):
-        self.make_temp_file()
+    def make_temp_file(self):
+        shutil.copyfile(self.origin_file_name, self.temp_file_name)
 
+    def load_excel_table(self):
         if self.workbook is None:
             self.workbook = openpyxl.open('temp.xlsx')
 
-
-    def make_temp_file(self):
-        if not os.path.exists(self.temp_file_name):
-            shutil.copy(self.origin_file_name, self.temp_file_name)
 
     def delete_make_file(self):
         os.remove(self.temp_file_name)
@@ -25,7 +22,7 @@ class ExcelEditor:
     def edit_cell(self, cell, value, change_teachers):
         self.load_excel_table()
 
-        sheet = self.workbook[self.workbook.sheetnames[change_teachers]]
+        sheet = self.workbook._sheets[change_teachers]
 
         sheet[cell] = value
 
