@@ -12,14 +12,14 @@ bot = telebot.TeleBot(API_TOKEN)
 
 allowed = ["1015008397"]
 
-filePath = "C:/Users/Cectus/Desktop/"
+filePath = "C:/Users/Cectus/z/school-schedule-bot-project/"
 fileName = "file"
 fileExt = ".xlsx"
 
 greetingsStr = ["Добрый день, вы можете начинать работу!",
                 "Вас нет в вайт-листе, есди вы учитель, то свяжитесь с нами @cectus1"]
 greetingsButtons = ["Изменить расписание", "Получить таблицу", "Внести актуальную таблицу"]
-actionSelectorStr = ["Введите день недели! (1-7)", "Скиньте файл"]
+actionSelectorStr = ["Введите данные в формате ДеньНедели КлассБуква НомерУрока. Пример '3 10Т 3'", "Скиньте файл"]
 getTableStr = "Файл успешно загружен!"
 
 @bot.message_handler(commands=["start"])
@@ -46,10 +46,11 @@ def scheduleShow(message):
     dayClassLesson = message.text.split(" ")
     lesson = FromSheet(int(dayClassLesson[0]), dayClassLesson[1].lower(), int(dayClassLesson[2]))
     bot.send_message(message.chat.id, "1.Урок: "+lesson.get_everything()[1]+"\n2.Учитель: "+lesson.get_everything()[0]+"\n\nВведите цифру и текст для изменения поля.")
-    bot.register_next_step_handler(message, getTable, lesson)
+    print(lesson[5])
+    #bot.register_next_step_handler(message, getTable, lesson)
 
 def scheduleEdit(message, lesson):
-    lesson.
+    return
 
 
 @bot.message_handler(content_types=['document'])

@@ -22,10 +22,10 @@ class ExcelEditor:
     def delete_make_file(self):
         os.remove(self.temp_file_name)
 
-    def edit_cell(self, cell, value, change_lessons):
+    def edit_cell(self, cell, value, change_teachers):
         self.load_excel_table()
 
-        sheet = self.workbook[self.workbook.sheetnames[change_lessons]]
+        sheet = self.workbook[self.workbook.sheetnames[change_teachers]]
 
         sheet[cell] = value
 
